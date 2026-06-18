@@ -1,5 +1,4 @@
 import type { SlideBackground } from '@shared/models/Template'
-import React from 'react'
 
 interface Props {
   background: SlideBackground
@@ -21,5 +20,5 @@ export function Background({ background }: Props) {
     }
   }
 
-  return <div className="absolute inset-0 z-0" style={style} />
+  return <div className="absolute inset-0" style={style} />
 }

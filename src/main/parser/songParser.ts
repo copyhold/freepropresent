@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs'
-import type { SectionType } from '@shared/models/Song'
+import type { SectionType } from '../../shared/models/Song'
 
 export interface RawSlide {
   lines: string[]

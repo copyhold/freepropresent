@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { OutputRenderPayload } from '@shared/models/Presentation'
-import { IPC } from '@shared/ipc/channels'
+import type { OutputRenderPayload } from '../shared/models/Presentation'
+import { IPC } from '../shared/ipc/channels'
 
 contextBridge.exposeInMainWorld('electronAPI', {
   onRender: (cb: (payload: OutputRenderPayload) => void) => {

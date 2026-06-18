@@ -1,6 +1,6 @@
 import { resolve, dirname } from 'path'
 import { existsSync } from 'fs'
-import type { CompiledSong, CompiledSection, CompiledSlide } from '@shared/models/Song'
+import type { CompiledSong, CompiledSection, CompiledSlide } from '../../shared/models/Song'
 import { parseSongFile, type ParsedSongFile } from './songParser'
 
 export function compileSong(filePath: string, id: string): CompiledSong {

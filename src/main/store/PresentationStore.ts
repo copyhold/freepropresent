@@ -1,6 +1,6 @@
 import { BrowserWindow } from 'electron'
-import type { PresentationState, OutputRenderPayload, ResolvedSlide } from '@shared/models/Presentation'
-import { IPC } from '@shared/ipc/channels'
+import type { PresentationState, OutputRenderPayload, ResolvedSlide } from '../../shared/models/Presentation'
+import { IPC } from '../../shared/ipc/channels'
 import type { SongLibrary } from './SongLibrary'
 import type { TemplateLibrary } from './TemplateLibrary'
 

@@ -28,7 +28,7 @@ export function createWindows(): { control: BrowserWindow; outputs: BrowserWindo
     width: 1200,
     height: 800,
     webPreferences: {
-      preload: getPreloadPath('control'),
+      preload: getPreloadPath('index'),
       contextIsolation: true,
       nodeIntegration: false
     }
@@ -55,7 +55,7 @@ export function createWindows(): { control: BrowserWindow; outputs: BrowserWindo
       alwaysOnTop: !isDev && displays.length > 1,
       backgroundColor: '#000000',
       webPreferences: {
-        preload: getPreloadPath('output'),
+        preload: getPreloadPath('index'),
         contextIsolation: true,
         nodeIntegration: false
       }

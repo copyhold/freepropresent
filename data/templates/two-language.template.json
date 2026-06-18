@@ -24,6 +24,21 @@
       "hideWhenEmpty": false
     },
     {
+      "id": "translation-ru",
+      "role": "translation",
+      "languageCode": "ru",
+      "geometry": { "left": 5, "top": 73, "width": 90, "height": 32 },
+      "style": {
+        "fontFamily": "Arial, sans-serif",
+        "fontSize": 44,
+        "color": "#cccccc",
+        "textAlign": "center",
+        "lineHeight": 1.35
+      },
+      "verticalAlign": "middle",
+      "hideWhenEmpty": true
+    },
+    {
       "id": "translation-he",
       "role": "translation",
       "languageCode": "he",

@@ -1,5 +1,5 @@
 import { ipcMain, screen } from 'electron'
-import { IPC } from '@shared/ipc/channels'
+import { IPC } from '../../shared/ipc/channels'
 import type { PresentationStore } from '../store/PresentationStore'
 
 export function registerPresentationHandlers(store: PresentationStore): void {

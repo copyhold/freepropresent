@@ -6,7 +6,7 @@ export function OutputPreview() {
   const [payload, setPayload] = useState<OutputRenderPayload | null>(null)
 
   useEffect(() => {
-    return window.electronAPI.onOutputRender((p) => setPayload(p))
+    return window.electronAPI.onOutputRender!((p) => setPayload(p))
   }, [])
 
   return (

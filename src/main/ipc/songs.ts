@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron'
-import { IPC } from '@shared/ipc/channels'
+import { IPC } from '../../shared/ipc/channels'
 import type { SongLibrary } from '../store/SongLibrary'
 
 export function registerSongHandlers(library: SongLibrary): void {

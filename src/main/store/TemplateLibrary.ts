@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, watch } from 'fs'
 import { join, basename } from 'path'
-import type { Template } from '@shared/models/Template'
+import type { Template } from '../../shared/models/Template'
 
 export class TemplateLibrary {
   private templates = new Map<string, Template>()

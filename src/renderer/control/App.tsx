@@ -8,7 +8,6 @@ import type { PresentationState, LibraryChangedEvent } from '@shared/models/Pres
 
 export function App() {
   const loadLibrary = useAppStore((s) => s.loadLibrary)
-  const reloadLibrary = useAppStore((s) => s.reloadLibrary)
   const setPresentationState = useAppStore((s) => s.setPresentationState)
   const nextSlide = useAppStore((s) => s.nextSlide)
   const prevSlide = useAppStore((s) => s.prevSlide)
@@ -19,12 +18,12 @@ export function App() {
   useEffect(() => {
     loadLibrary()
 
-    const unsubState = window.electronAPI.onPresentationStateChanged((state: PresentationState) => {
+    const unsubState = window.electronAPI.onPresentationStateChanged!((state: PresentationState) => {
       setPresentationState(state)
     })
 
-    const unsubLibrary = window.electronAPI.onLibraryChanged((_event: LibraryChangedEvent) => {
-      reloadLibrary()
+    const unsubLibrary = window.electronAPI.onLibraryChanged!((_event: LibraryChangedEvent) => {
+      loadLibrary()
     })
 
     return () => {

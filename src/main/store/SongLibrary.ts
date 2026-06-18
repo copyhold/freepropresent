@@ -1,9 +1,9 @@
 import { watch, type FSWatcher } from 'chokidar'
 import { BrowserWindow } from 'electron'
 import { basename, extname } from 'path'
-import type { CompiledSong } from '@shared/models/Song'
-import type { LibraryChangedEvent } from '@shared/models/Presentation'
-import { IPC } from '@shared/ipc/channels'
+import type { CompiledSong } from '../../shared/models/Song'
+import type { LibraryChangedEvent } from '../../shared/models/Presentation'
+import { IPC } from '../../shared/ipc/channels'
 import { compileSong } from '../parser/songCompiler'
 
 export class SongLibrary {

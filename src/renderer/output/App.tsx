@@ -6,7 +6,7 @@ export function App() {
   const [payload, setPayload] = useState<OutputRenderPayload | null>(null)
 
   useEffect(() => {
-    return window.electronAPI.onRender((p) => setPayload(p))
+    return window.electronAPI.onRender!((p) => setPayload(p))
   }, [])
 
   if (!payload) {

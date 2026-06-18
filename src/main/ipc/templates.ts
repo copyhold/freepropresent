@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron'
-import { IPC } from '@shared/ipc/channels'
+import { IPC } from '../../shared/ipc/channels'
 import type { TemplateLibrary } from '../store/TemplateLibrary'
 
 export function registerTemplateHandlers(library: TemplateLibrary): void {

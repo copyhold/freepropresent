@@ -31,20 +31,20 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   loadLibrary: async () => {
     const [songs, templates] = await Promise.all([
-      window.electronAPI.invoke(IPC.SONGS_LIST) as Promise<CompiledSong[]>,
-      window.electronAPI.invoke(IPC.TEMPLATES_LIST) as Promise<Template[]>
+      window.electronAPI.invoke!(IPC.SONGS_LIST) as Promise<CompiledSong[]>,
+      window.electronAPI.invoke!(IPC.TEMPLATES_LIST) as Promise<Template[]>
     ])
     set({ songs, templates })
   },
 
   reloadLibrary: async () => {
-    await window.electronAPI.invoke(IPC.SONGS_RELOAD)
-    const songs = (await window.electronAPI.invoke(IPC.SONGS_LIST)) as CompiledSong[]
+    await window.electronAPI.invoke!(IPC.SONGS_RELOAD)
+    const songs = (await window.electronAPI.invoke!(IPC.SONGS_LIST)) as CompiledSong[]
     set({ songs })
   },
 
   loadSong: async (id: string, templateId?: string) => {
-    const state = (await window.electronAPI.invoke(IPC.PRESENT_LOAD_SONG, {
+    const state = (await window.electronAPI.invoke!(IPC.PRESENT_LOAD_SONG, {
       songId: id,
       templateId
     })) as PresentationState
@@ -54,17 +54,17 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   nextSlide: async () => {
-    const state = (await window.electronAPI.invoke(IPC.PRESENT_NEXT_SLIDE)) as PresentationState
+    const state = (await window.electronAPI.invoke!(IPC.PRESENT_NEXT_SLIDE)) as PresentationState
     set({ presentationState: state })
   },
 
   prevSlide: async () => {
-    const state = (await window.electronAPI.invoke(IPC.PRESENT_PREV_SLIDE)) as PresentationState
+    const state = (await window.electronAPI.invoke!(IPC.PRESENT_PREV_SLIDE)) as PresentationState
     set({ presentationState: state })
   },
 
   gotoSlide: async (index: number) => {
-    const state = (await window.electronAPI.invoke(IPC.PRESENT_GOTO_SLIDE, index)) as PresentationState
+    const state = (await window.electronAPI.invoke!(IPC.PRESENT_GOTO_SLIDE, index)) as PresentationState
     set({ presentationState: state })
   },
 
@@ -95,12 +95,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   setMode: async (mode) => {
-    const state = (await window.electronAPI.invoke(IPC.PRESENT_SET_MODE, mode)) as PresentationState
+    const state = (await window.electronAPI.invoke!(IPC.PRESENT_SET_MODE, mode)) as PresentationState
     set({ presentationState: state })
   },
 
   setTemplate: async (templateId: string) => {
-    const state = (await window.electronAPI.invoke(IPC.PRESENT_SET_TEMPLATE, templateId)) as PresentationState
+    const state = (await window.electronAPI.invoke!(IPC.PRESENT_SET_TEMPLATE, templateId)) as PresentationState
     set({ presentationState: state })
   },
 

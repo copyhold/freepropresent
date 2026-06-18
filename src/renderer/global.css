@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  /* App surface scale (dark UI) */
+  --color-app-950: #111;
+  --color-app-900: #1a1a1a;
+  --color-app-800: #222;
+  --color-app-700: #2a2a2a;
+  --color-app-600: #444;
+  --color-app-500: #555;
+  --color-app-400: #666;
+  --color-app-300: #888;
+  --color-app-200: #aaa;
+  --color-app-100: #ccc;
+  /* Accent */
+  --color-accent: #4a8fff;
+  --color-accent-dark: #1a2a4a;
+  --color-accent-song: #2a4a7f;
+}
+
+@layer base {
+  html, body, #root {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+}

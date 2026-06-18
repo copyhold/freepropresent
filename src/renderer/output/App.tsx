@@ -10,11 +10,11 @@ export function App() {
   }, [])
 
   if (!payload) {
-    return <div style={{ width: '100%', height: '100%', background: '#000' }} />
+    return <div className="w-full h-full bg-black" />
   }
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div className="w-screen h-screen">
       <SlideRenderer payload={payload} />
     </div>
   )

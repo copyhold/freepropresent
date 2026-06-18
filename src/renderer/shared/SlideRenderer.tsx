@@ -10,11 +10,11 @@ export function SlideRenderer({ payload }: Props) {
   const { slide, template, songTitle, songCopyright, state } = payload
 
   if (state.outputMode !== 'live' || !slide) {
-    return <div className="relative w-full h-full overflow-hidden"><Background background={{ type: 'color', color: '#000' }} /></div>
+    return <div className="relative w-full h-full overflow-hidden bg-black"><Background background={{ type: 'color', color: '#000' }} /></div>
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden">
+    <div className="relative w-full h-full overflow-hidden bg-black">
       <Background background={template.background} />
       {template.parts.map((part) => {
         let lines: string[] = []

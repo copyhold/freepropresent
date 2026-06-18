@@ -7,7 +7,7 @@ export function SlideNavigator() {
 
   if (!activeSong) {
     return (
-      <div style={{ padding: '16px', color: '#666', textAlign: 'center' }}>
+      <div className="p-4 text-app-400 text-center">
         Select a song to start
       </div>
     )
@@ -16,25 +16,19 @@ export function SlideNavigator() {
   let flatIndex = 0
 
   return (
-    <div style={{ overflowY: 'auto', height: '100%', padding: '8px' }}>
+    <div className="overflow-y-auto h-full p-2">
       {activeSong.sections.map((section) => {
         const sectionStart = flatIndex
         flatIndex += section.slides.length
 
         return (
-          <div key={section.name} style={{ marginBottom: '12px' }}>
+          <div key={section.name} className="mb-3">
             <div
-              style={{
-                fontSize: '11px',
-                textTransform: 'uppercase',
-                color: '#888',
-                marginBottom: '4px',
-                letterSpacing: '0.05em'
-              }}
+              className="text-[11px] uppercase text-app-300 mb-1 tracking-[0.05em]"
             >
               {section.name}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+            <div className="flex flex-wrap gap-1">
               {section.slides.map((slide, idx) => {
                 const fi = sectionStart + idx
                 const isActive = presentationState?.currentSlideIndex === fi
@@ -45,19 +39,7 @@ export function SlideNavigator() {
                     key={slide.id}
                     onClick={() => gotoSlide(fi)}
                     title={primaryLines.join('\n')}
-                    style={{
-                      width: '80px',
-                      height: '48px',
-                      padding: '4px',
-                      borderRadius: '4px',
-                      border: isActive ? '2px solid #4a8fff' : '1px solid #333',
-                      background: isActive ? '#1a2a4a' : '#1a1a1a',
-                      cursor: 'pointer',
-                      overflow: 'hidden',
-                      fontSize: '9px',
-                      lineHeight: 1.3,
-                      color: '#ccc'
-                    }}
+                    className={`w-20 h-12 p-1 rounded cursor-pointer overflow-hidden text-[9px] leading-[1.3] text-app-100 ${isActive ? 'border-2 border-accent bg-accent-dark' : 'border border-[#333] bg-app-900'}`}
                   >
                     {primaryLines.slice(0, 3).join('\n')}
                   </div>

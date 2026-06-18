@@ -12,44 +12,31 @@ export function SongList() {
   )
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div className="flex flex-col h-full">
       <input
         type="text"
         placeholder="Search songs…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        style={{
-          padding: '8px',
-          margin: '8px',
-          borderRadius: '4px',
-          border: '1px solid #444',
-          background: '#1a1a1a',
-          color: '#fff'
-        }}
+        className="p-2 m-2 rounded border border-app-600 bg-app-900 text-white"
       />
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="flex-1 overflow-y-auto">
         {filtered.map((song) => (
           <div
             key={song.id}
             onClick={() => loadSong(song.id)}
-            style={{
-              padding: '10px 12px',
-              cursor: 'pointer',
-              background: presentationState?.activeSongId === song.id ? '#2a4a7f' : 'transparent',
-              borderBottom: '1px solid #2a2a2a',
-              color: '#fff'
-            }}
+            className={`py-2.5 px-3 cursor-pointer border-b border-app-700 text-white ${presentationState?.activeSongId === song.id ? 'bg-accent-song' : 'bg-transparent'}`}
           >
-            <div style={{ fontWeight: 500 }}>{song.title}</div>
+            <div className="font-medium">{song.title}</div>
             {song.mood.length > 0 && (
-              <div style={{ fontSize: '11px', color: '#888', marginTop: '2px' }}>
+              <div className="text-[11px] text-app-300 mt-0.5">
                 {song.mood.join(', ')}
               </div>
             )}
           </div>
         ))}
         {filtered.length === 0 && (
-          <div style={{ padding: '12px', color: '#666', textAlign: 'center' }}>
+          <div className="p-3 text-app-400 text-center">
             No songs found
           </div>
         )}

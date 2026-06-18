@@ -11,28 +11,13 @@ export function OutputPreview() {
 
   return (
     <div
-      style={{
-        width: '100%',
-        aspectRatio: '16/9',
-        background: '#000',
-        borderRadius: '4px',
-        overflow: 'hidden',
-        border: '1px solid #333'
-      }}
+      className="w-full aspect-video bg-black rounded overflow-hidden border border-[#333]"
     >
       {payload ? (
         <SlideRenderer payload={payload} />
       ) : (
         <div
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#444',
-            fontSize: '12px'
-          }}
+          className="w-full h-full flex items-center justify-center text-app-600 text-xs"
         >
           No output
         </div>

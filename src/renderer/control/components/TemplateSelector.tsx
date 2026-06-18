@@ -17,7 +17,7 @@ export function TemplateSelector() {
   })
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '8px' }}>
+    <div className="flex flex-wrap gap-1.5 p-2">
       {sorted.map((t) => {
         const isActive = presentationState?.templateId === t.id
         const isRec = recommended.includes(t.name) || recommended.includes(t.id)
@@ -26,15 +26,7 @@ export function TemplateSelector() {
           <button
             key={t.id}
             onClick={() => setTemplate(t.id)}
-            style={{
-              padding: '4px 10px',
-              borderRadius: '4px',
-              border: isActive ? '2px solid #4a8fff' : '1px solid #444',
-              background: isActive ? '#1a2a4a' : '#222',
-              color: isRec ? '#fff' : '#aaa',
-              cursor: 'pointer',
-              fontSize: '12px'
-            }}
+            className={`py-1 px-2.5 rounded cursor-pointer text-xs ${isActive ? 'border-2 border-accent bg-accent-dark' : 'border border-app-600 bg-app-800'} ${isRec ? 'text-white' : 'text-app-200'}`}
           >
             {t.name}
             {isRec && ' ★'}

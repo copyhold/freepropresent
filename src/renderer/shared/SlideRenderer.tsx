@@ -9,20 +9,12 @@ interface Props {
 export function SlideRenderer({ payload }: Props) {
   const { slide, template, songTitle, songCopyright, state } = payload
 
-  const containerStyle: React.CSSProperties = {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-    backgroundColor: '#000'
-  }
-
   if (state.outputMode !== 'live' || !slide) {
-    return <div style={containerStyle}><Background background={{ type: 'color', color: '#000' }} /></div>
+    return <div className="relative w-full h-full overflow-hidden bg-black"><Background background={{ type: 'color', color: '#000' }} /></div>
   }
 
   return (
-    <div style={containerStyle}>
+    <div className="relative w-full h-full overflow-hidden bg-black">
       <Background background={template.background} />
       {template.parts.map((part) => {
         let lines: string[] = []

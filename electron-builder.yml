@@ -1,0 +1,22 @@
+appId: com.propresent.app
+productName: Propresent
+copyright: Copyright © 2024
+
+directories:
+  output: dist
+
+files:
+  - out/**/*
+  - package.json
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: true
+  perMachine: false
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico

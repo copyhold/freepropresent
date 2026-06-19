@@ -8,7 +8,8 @@
     "dev:debug": "electron-vite dev --inspect",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json",
+    "dist:win": "npm run build && electron-builder --win --publish never"
   },
   "dependencies": {
     "chokidar": "3.6.0",

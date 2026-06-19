@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: dev:debug",
+      "type": "npm",
+      "script": "dev:debug",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "electron-vite",
+        "pattern": {
+          "regexp": "^(.*)$",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*electron-vite.*$",
+          "endsPattern": "^.*ready in.*$"
+        }
+      }
+    }
+  ]
+}

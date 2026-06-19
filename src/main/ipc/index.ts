@@ -4,6 +4,7 @@ import type { PresentationStore } from '../store/PresentationStore'
 import { registerSongHandlers } from './songs'
 import { registerTemplateHandlers } from './templates'
 import { registerPresentationHandlers } from './presentation'
+import { registerShellHandlers } from './shell'
 
 export function registerAllHandlers(
   songs: SongLibrary,
@@ -13,4 +14,5 @@ export function registerAllHandlers(
   registerSongHandlers(songs)
   registerTemplateHandlers(templates)
   registerPresentationHandlers(presentation)
+  registerShellHandlers()
 }

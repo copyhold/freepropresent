@@ -14,6 +14,8 @@ export const IPC = {
   PRESENT_SET_TEMPLATE: 'present:setTemplate',
   PRESENT_CLEAR: 'present:clear',
 
+  SHELL_OPEN_FILE: 'shell:openFile',
+
   DISPLAY_LIST: 'display:list',
   APP_GET_PATHS: 'app:getPaths',
 

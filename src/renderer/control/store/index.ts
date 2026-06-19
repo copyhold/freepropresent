@@ -1,9 +1,9 @@
 import { create } from 'zustand'
-import type { CompiledSong } from '@shared/models/Song'
-import type { Template } from '@shared/models/Template'
-import type { PresentationState } from '@shared/models/Presentation'
-import { IPC } from '@shared/ipc/channels'
-import type { SectionType } from '@shared/models/Song'
+import type { CompiledSong } from '../../../shared/models/Song'
+import type { Template } from '../../../shared/models/Template'
+import type { PresentationState } from '../../../shared/models/Presentation'
+import { IPC } from '../../../shared/ipc/channels'
+import type { SectionType } from '../../../shared/models/Song'
 
 interface AppState {
   songs: CompiledSong[]

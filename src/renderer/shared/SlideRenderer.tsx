@@ -1,4 +1,4 @@
-import type { OutputRenderPayload } from '@shared/models/Presentation'
+import type { OutputRenderPayload } from '../../shared/models/Presentation'
 import { Background } from './Background'
 import { SlidePart } from './SlidePart'
 

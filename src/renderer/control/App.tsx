@@ -5,7 +5,7 @@ import { SongDetailPane } from './components/SongDetailPane'
 import { SlideNavigator } from './components/SlideNavigator'
 import { TemplateSelector } from './components/TemplateSelector'
 import { OutputPreview } from './components/OutputPreview'
-import type { PresentationState, LibraryChangedEvent } from '@shared/models/Presentation'
+import type { PresentationState, LibraryChangedEvent } from '../../shared/models/Presentation'
 
 export function App() {
   const loadLibrary = useAppStore((s) => s.loadLibrary)

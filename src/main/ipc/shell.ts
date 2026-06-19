@@ -1,6 +1,6 @@
 import { ipcMain, shell } from 'electron'
 import * as path from 'path'
-import { IPC } from '@shared/ipc/channels'
+import { IPC } from '../../shared/ipc/channels'
 
 export function registerShellHandlers(): void {
   ipcMain.handle(IPC.SHELL_OPEN_FILE, (_event, filePath: string) => {

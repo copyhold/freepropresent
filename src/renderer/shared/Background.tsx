@@ -1,4 +1,4 @@
-import type { SlideBackground } from '@shared/models/Template'
+import type { SlideBackground } from '../../shared/models/Template'
 
 interface Props {
   background: SlideBackground

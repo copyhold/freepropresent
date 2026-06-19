@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import type { TemplatePart } from '@shared/models/Template'
+import type { TemplatePart } from '../../shared/models/Template'
 
 const RTL_LANGS = new Set(['he', 'ar', 'fa', 'ur'])
 

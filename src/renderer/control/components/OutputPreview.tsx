@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import type { OutputRenderPayload } from '@shared/models/Presentation'
+import type { OutputRenderPayload } from '../../../shared/models/Presentation'
 import { SlideRenderer } from '../../shared/SlideRenderer'
 
 export function OutputPreview() {

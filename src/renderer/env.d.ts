@@ -1,4 +1,4 @@
-import type { PresentationState, OutputRenderPayload, LibraryChangedEvent } from '@shared/models/Presentation'
+import type { PresentationState, OutputRenderPayload, LibraryChangedEvent } from '../shared/models/Presentation'
 
 declare global {
   interface Window {

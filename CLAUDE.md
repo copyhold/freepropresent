@@ -63,7 +63,7 @@ IPC channel names live in `src/shared/ipc/channels.ts`. Main handlers are in `sr
 
 ### Build config
 
-`electron.vite.config.ts` defines three Vite sub-configs (main, preload, renderer). The renderer has two HTML entry points (control + output). Path aliases: `@shared/*` → `src/shared/`, `@renderer/*` → `src/renderer/`.
+`electron.vite.config.ts` defines three Vite sub-configs (main, preload, renderer). The renderer has two HTML entry points (control + output). **Never use `@` path aliases** — always use relative imports (e.g. `../../shared/models/Foo`).
 
 ## Layout conventions
 

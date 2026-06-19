@@ -5,6 +5,8 @@ import { IPC } from '../shared/ipc/channels'
 contextBridge.exposeInMainWorld('electronAPI', {
   invoke: (channel: string, ...args: unknown[]) => ipcRenderer.invoke(channel, ...args),
 
+  openFile: (filePath: string) => ipcRenderer.invoke(IPC.SHELL_OPEN_FILE, filePath),
+
   onRender: (cb: (payload: OutputRenderPayload) => void) => {
     const handler = (_e: Electron.IpcRendererEvent, payload: OutputRenderPayload) => cb(payload)
     ipcRenderer.on(IPC.OUTPUT_RENDER, handler)

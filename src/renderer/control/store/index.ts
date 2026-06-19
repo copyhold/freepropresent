@@ -10,6 +10,7 @@ interface AppState {
   templates: Template[]
   presentationState: PresentationState | null
   activeSong: CompiledSong | null
+  selectedSong: CompiledSong | null
 
   loadLibrary: () => Promise<void>
   loadSong: (id: string, templateId?: string) => Promise<void>
@@ -21,6 +22,8 @@ interface AppState {
   setTemplate: (templateId: string) => Promise<void>
   setPresentationState: (state: PresentationState) => void
   reloadLibrary: () => Promise<void>
+  selectSong: (id: string | null) => void
+  clearPresentation: () => Promise<void>
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -28,19 +31,28 @@ export const useAppStore = create<AppState>((set, get) => ({
   templates: [],
   presentationState: null,
   activeSong: null,
+  selectedSong: null,
 
   loadLibrary: async () => {
     const [songs, templates] = await Promise.all([
       window.electronAPI.invoke!(IPC.SONGS_LIST) as Promise<CompiledSong[]>,
       window.electronAPI.invoke!(IPC.TEMPLATES_LIST) as Promise<Template[]>
     ])
-    set({ songs, templates })
+    const { selectedSong } = get()
+    const refreshedSelectedSong = selectedSong
+      ? (songs.find((s) => s.id === selectedSong.id) ?? null)
+      : null
+    set({ songs, templates, selectedSong: refreshedSelectedSong })
   },
 
   reloadLibrary: async () => {
     await window.electronAPI.invoke!(IPC.SONGS_RELOAD)
     const songs = (await window.electronAPI.invoke!(IPC.SONGS_LIST)) as CompiledSong[]
-    set({ songs })
+    const { selectedSong } = get()
+    const refreshedSelectedSong = selectedSong
+      ? (songs.find((s) => s.id === selectedSong.id) ?? null)
+      : null
+    set({ songs, selectedSong: refreshedSelectedSong })
   },
 
   loadSong: async (id: string, templateId?: string) => {
@@ -108,5 +120,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     const { songs } = get()
     const activeSong = state.activeSongId ? (songs.find((s) => s.id === state.activeSongId) ?? null) : null
     set({ presentationState: state, activeSong })
+  },
+
+  selectSong: (id: string | null) => {
+    const song = id ? (get().songs.find((s) => s.id === id) ?? null) : null
+    set({ selectedSong: song })
+  },
+
+  clearPresentation: async () => {
+    const state = (await window.electronAPI.invoke!(IPC.PRESENT_CLEAR)) as PresentationState
+    set({ presentationState: state, activeSong: null })
   }
 }))

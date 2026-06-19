@@ -3,6 +3,7 @@ import type { PresentationState, OutputRenderPayload, ResolvedSlide } from '../.
 import { IPC } from '../../shared/ipc/channels'
 import type { SongLibrary } from './SongLibrary'
 import type { TemplateLibrary } from './TemplateLibrary'
+import type { AppConfigLibrary } from './AppConfigLibrary'
 
 const DEFAULT_TEMPLATE_ID = 'default'
 
@@ -22,7 +23,8 @@ export class PresentationStore {
 
   constructor(
     private songs: SongLibrary,
-    private templates: TemplateLibrary
+    private templates: TemplateLibrary,
+    private appConfigLib: AppConfigLibrary
   ) {}
 
   getState(): PresentationState {
@@ -124,7 +126,8 @@ export class PresentationStore {
       slide: resolvedSlide,
       template,
       songTitle: song?.title ?? '',
-      songCopyright: song?.copyright
+      songCopyright: song?.copyright,
+      appConfig: this.appConfigLib.get()
     }
 
     for (const win of BrowserWindow.getAllWindows()) {

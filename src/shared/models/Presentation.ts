@@ -1,5 +1,6 @@
 import type { CompiledSlide } from './Song'
 import type { Template } from './Template'
+import type { AppConfig } from './AppConfig'
 
 export interface PresentationState {
   activeSongId: string | null
@@ -25,6 +26,7 @@ export interface OutputRenderPayload {
   template: Template
   songTitle: string
   songCopyright?: string
+  appConfig: AppConfig
 }
 
 export interface LibraryChangedEvent {

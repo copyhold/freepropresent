@@ -7,7 +7,7 @@ interface Props {
 }
 
 export function SlideRenderer({ payload }: Props) {
-  const { slide, template, songTitle, songCopyright, state } = payload
+  const { slide, template, songTitle, songCopyright, state, appConfig } = payload
 
   if (state.outputMode !== 'live' || !slide) {
     return <div className="relative w-full h-full overflow-hidden bg-black"><Background background={{ type: 'color', color: '#000' }} /></div>
@@ -42,7 +42,18 @@ export function SlideRenderer({ payload }: Props) {
 
         if (part.hideWhenEmpty && lines.every((l) => !l.trim())) return null
 
-        return <SlidePart key={part.id} part={part} lines={lines} />
+        const minFontSize = part.style.minFontSize ?? template.minFontSize ?? appConfig?.minFontSize
+        const maxFontSize = part.style.maxFontSize ?? template.maxFontSize ?? appConfig?.maxFontSize
+
+        return (
+          <SlidePart
+            key={part.id}
+            part={part}
+            lines={lines}
+            minFontSize={minFontSize}
+            maxFontSize={maxFontSize}
+          />
+        )
       })}
     </div>
   )

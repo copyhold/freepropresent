@@ -6,11 +6,13 @@ import { createWindows } from './windows'
 const isDev = process.env.NODE_ENV === 'development'
 import { SongLibrary } from './store/SongLibrary'
 import { TemplateLibrary } from './store/TemplateLibrary'
+import { AppConfigLibrary } from './store/AppConfigLibrary'
 import { PresentationStore } from './store/PresentationStore'
 import { registerAllHandlers } from './ipc/index'
 
 const songLibrary = new SongLibrary()
 const templateLibrary = new TemplateLibrary()
+const appConfigLibrary = new AppConfigLibrary()
 let presentationStore: PresentationStore
 
 function getDataDir(): string {
@@ -28,10 +30,11 @@ app.whenReady().then(async () => {
   mkdirSync(songsDir, { recursive: true })
   mkdirSync(templatesDir, { recursive: true })
 
+  appConfigLibrary.load(dataDir)
   templateLibrary.load(templatesDir)
   await songLibrary.load(songsDir)
 
-  presentationStore = new PresentationStore(songLibrary, templateLibrary)
+  presentationStore = new PresentationStore(songLibrary, templateLibrary, appConfigLibrary)
 
   registerAllHandlers(songLibrary, templateLibrary, presentationStore)
 

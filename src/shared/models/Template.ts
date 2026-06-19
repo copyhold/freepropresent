@@ -3,6 +3,8 @@ export type PartRole = 'primary' | 'translation' | 'title' | 'copyright' | 'sect
 export interface TextStyle {
   fontFamily?: string
   fontSize?: number
+  minFontSize?: number
+  maxFontSize?: number
   fontWeight?: 'normal' | 'bold' | number
   fontStyle?: 'normal' | 'italic'
   color?: string
@@ -45,6 +47,8 @@ export interface Template {
   name: string
   description?: string
   designResolution?: { width: number; height: number }
+  minFontSize?: number
+  maxFontSize?: number
   background: SlideBackground
   parts: TemplatePart[]
   sectionOverrides?: Partial<Record<string, Partial<TemplatePart>[]>>

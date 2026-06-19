@@ -1,6 +1,6 @@
 appId: com.propresent.app
-productName: Propresent
-copyright: Copyright © 2024
+productName: songpresent
+copyright: Copyright © 2026
 
 directories:
   output: dist
@@ -18,5 +18,5 @@ win:
 nsis:
   oneClick: true
   perMachine: false
-  installerIcon: build/icon.ico
-  uninstallerIcon: build/icon.ico
+  installerIcon: build/icon.png
+  uninstallerIcon: build/icon.png

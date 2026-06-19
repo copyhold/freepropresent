@@ -1,6 +1,6 @@
 import { watch, type FSWatcher } from 'chokidar'
 import { BrowserWindow } from 'electron'
-import { basename, extname } from 'path'
+import { basename, extname, relative } from 'path'
 import type { CompiledSong } from '../../shared/models/Song'
 import type { LibraryChangedEvent } from '../../shared/models/Presentation'
 import { IPC } from '../../shared/ipc/channels'
@@ -9,58 +9,49 @@ import { compileSong } from '../parser/songCompiler'
 export class SongLibrary {
   private songs = new Map<string, CompiledSong>()
   private variantIndex = new Map<string, string>() // variantAbsPath → songId
-  private watcher: FSWatcher | null = null
-  private songsDir = ''
+  private watchers: FSWatcher[] = []
+  private songDirs: string[] = []
 
-  async load(songsDir: string): Promise<void> {
-    this.songsDir = songsDir
-    this.watcher?.close()
+  async load(songDirs: string[]): Promise<void> {
+    this.songDirs = songDirs
+    for (const w of this.watchers) w.close()
+    this.watchers = []
 
-    this.watcher = watch(songsDir, {
-      persistent: true,
-      ignoreInitial: false,
-      awaitWriteFinish: { stabilityThreshold: 300, pollInterval: 100 }
-    })
-
-    this.watcher.on('add', (path) => this.handleFile(path, 'added'))
-    this.watcher.on('change', (path) => this.handleFile(path, 'changed'))
-    this.watcher.on('unlink', (path) => this.handleRemove(path))
+    for (const dir of songDirs) {
+      const watcher = watch(dir, {
+        persistent: true,
+        ignoreInitial: false,
+        awaitWriteFinish: { stabilityThreshold: 300, pollInterval: 100 }
+      })
+      watcher.on('add', (path) => this.handleFile(dir, path, 'added'))
+      watcher.on('change', (path) => this.handleFile(dir, path, 'changed'))
+      watcher.on('unlink', (path) => this.handleRemove(dir, path))
+      this.watchers.push(watcher)
+    }
   }
 
-  private isVariant(filePath: string): boolean {
-    return this.variantIndex.has(filePath)
-  }
-
-  private handleFile(filePath: string, action: 'added' | 'changed'): void {
+  private handleFile(dir: string, filePath: string, action: 'added' | 'changed'): void {
     if (extname(filePath) !== '.md') return
 
     if (this.variantIndex.has(filePath)) {
-      // Recompile parent
       const songId = this.variantIndex.get(filePath)!
       const song = this.songs.get(songId)
-      if (song) this.loadSong(song.filePath)
+      if (song) this.loadSong(dir, song.filePath)
       return
     }
 
-    // Check if it looks like a variant file (has multiple dots in stem, e.g. amazing-grace.he.md)
-    // Only load top-level songs here; variants are loaded via compileSong
     const stem = basename(filePath, '.md')
-    if (stem.includes('.')) {
-      // Might be a variant — check if any song claims it
-      // If not yet indexed, skip — the parent will pick it up
-      return
-    }
+    if (stem.includes('.')) return
 
-    this.loadSong(filePath, action)
+    this.loadSong(dir, filePath, action)
   }
 
-  private loadSong(filePath: string, action: 'added' | 'changed' = 'changed'): void {
+  private loadSong(dir: string, filePath: string, action: 'added' | 'changed' = 'changed'): void {
     try {
-      const id = this.filePathToId(filePath)
+      const id = this.filePathToId(dir, filePath)
       const song = compileSong(filePath, id)
       this.songs.set(id, song)
 
-      // Update variant index
       for (const varPath of song.variantFilePaths) {
         this.variantIndex.set(varPath, id)
       }
@@ -71,10 +62,10 @@ export class SongLibrary {
     }
   }
 
-  private handleRemove(filePath: string): void {
+  private handleRemove(dir: string, filePath: string): void {
     if (extname(filePath) !== '.md') return
 
-    const id = this.filePathToId(filePath)
+    const id = this.filePathToId(dir, filePath)
     if (this.songs.has(id)) {
       const song = this.songs.get(id)!
       for (const varPath of song.variantFilePaths) {
@@ -85,8 +76,15 @@ export class SongLibrary {
     }
   }
 
-  private filePathToId(filePath: string): string {
-    return basename(filePath, '.md')
+  // Namespace by folder index to avoid collisions across directories.
+  // Songs in the first (default) dir keep bare stems for backwards compatibility.
+  private filePathToId(dir: string, filePath: string): string {
+    const stem = basename(filePath, '.md')
+    const dirIndex = this.songDirs.indexOf(dir)
+    if (dirIndex <= 0) return stem
+    // Use relative path from dir root as the id for extra folders
+    const rel = relative(dir, filePath).replace(/\.md$/, '').replace(/\\/g, '/')
+    return `${dirIndex}:${rel}`
   }
 
   private notify(event: LibraryChangedEvent): void {
@@ -106,10 +104,11 @@ export class SongLibrary {
   reload(): void {
     this.songs.clear()
     this.variantIndex.clear()
-    if (this.songsDir) this.load(this.songsDir)
+    if (this.songDirs.length) this.load(this.songDirs)
   }
 
   close(): void {
-    this.watcher?.close()
+    for (const w of this.watchers) w.close()
+    this.watchers = []
   }
 }

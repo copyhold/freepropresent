@@ -32,7 +32,9 @@ app.whenReady().then(async () => {
 
   appConfigLibrary.load(dataDir)
   templateLibrary.load(templatesDir)
-  await songLibrary.load(songsDir)
+
+  const extraFolders = appConfigLibrary.get().songFolders ?? []
+  await songLibrary.load([songsDir, ...extraFolders])
 
   presentationStore = new PresentationStore(songLibrary, templateLibrary, appConfigLibrary)
 

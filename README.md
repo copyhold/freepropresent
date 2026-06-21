@@ -110,6 +110,55 @@ Songs go in `data/songs/`. Templates go in `data/templates/`. Point the app at a
 
 ---
 
+## Custom CSS
+
+Settings → Custom CSS lets you inject styles into either window. Each window exposes semantic classes you can target.
+
+### Control window selectors
+
+| Selector | Element |
+|---|---|
+| `.ctrl-root` | Root grid (the whole control window) |
+| `.ctrl-col-songs` | Song list column |
+| `.ctrl-col-detail` | Song detail column |
+| `.ctrl-col-pane` | Presentation pane column |
+| `.ctrl-pane-toolbar` | Fade Out / Fade In / End button bar |
+| `.ctrl-pane-templates` | Template selector strip |
+| `.ctrl-pane-slides` | Slide navigator area |
+| `.ctrl-pane-preview` | Bottom preview + slide info |
+
+### Presentation window selectors
+
+**Slide container** — present on every live slide:
+
+| Selector | When |
+|---|---|
+| `.slide-root` | every live slide |
+| `.slide-verse` | verse section |
+| `.slide-chorus` | chorus section |
+| `.slide-bridge` | bridge section |
+| `.slide-pre-chorus` | pre-chorus section |
+| `.slide-intro` | intro section |
+| `.slide-outro` | outro section |
+| `.slide-custom` | custom-typed section |
+
+**Part divs** — one per template part:
+
+| Selector | When |
+|---|---|
+| `.slide-part` | every part |
+| `.slide-part-primary` | main lyrics |
+| `.slide-part-translation` | translation text |
+| `.slide-part-title` | song title |
+| `.slide-part-copyright` | copyright line |
+| `.slide-part-section-label` | section label |
+| `.slide-part-custom` | static custom text |
+| `.lang-en`, `.lang-he`, `.lang-ar` … | any part with a language code |
+
+Example: `.slide-chorus .slide-part-primary { color: gold; }` or `.lang-he { direction: rtl; }`.
+
+---
+
 ## Stack
 
 Electron 31 · React 18 · TypeScript 5 · Vite (electron-vite) · Tailwind CSS 4 · Zustand · Zod · chokidar

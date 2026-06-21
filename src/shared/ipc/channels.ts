@@ -25,6 +25,7 @@ export const IPC = {
 
   CONFIG_GET: 'config:get',
   CONFIG_SAVE: 'config:save',
+  CONFIG_CHANGED: 'config:changed',
   SHELL_OPEN_FOLDER: 'shell:openFolder',
   SETTINGS_OPEN: 'settings:open',
 } as const

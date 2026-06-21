@@ -41,5 +41,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
     const handler = (_e: Electron.IpcRendererEvent, payload: OutputRenderPayload) => cb(payload)
     ipcRenderer.on(IPC.OUTPUT_RENDER, handler)
     return () => ipcRenderer.off(IPC.OUTPUT_RENDER, handler)
+  },
+
+  onConfigChanged: (cb: (config: AppConfig) => void) => {
+    const handler = (_e: Electron.IpcRendererEvent, config: AppConfig) => cb(config)
+    ipcRenderer.on(IPC.CONFIG_CHANGED, handler)
+    return () => ipcRenderer.off(IPC.CONFIG_CHANGED, handler)
   }
 })

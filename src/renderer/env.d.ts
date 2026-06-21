@@ -15,6 +15,7 @@ declare global {
       onLibraryChanged?: (cb: (event: LibraryChangedEvent) => void) => () => void
       onOutputRender?: (cb: (payload: OutputRenderPayload) => void) => () => void
       onRender?: (cb: (payload: OutputRenderPayload) => void) => () => void
+      onConfigChanged?: (cb: (config: AppConfig) => void) => () => void
     }
   }
 }

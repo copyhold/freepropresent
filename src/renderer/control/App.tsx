@@ -7,6 +7,16 @@ import { TemplateSelector } from './components/TemplateSelector'
 import { OutputPreview } from './components/OutputPreview'
 import { SettingsModal } from './components/SettingsModal'
 import type { PresentationState, LibraryChangedEvent } from '../../shared/models/Presentation'
+import type { AppConfig } from '../../shared/models/AppConfig'
+import { injectCss } from '../shared/injectCss'
+
+function applyThemeAndCss(config: AppConfig): void {
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  const isDark = config.theme === 'dark' || (config.theme === 'system' && prefersDark)
+  document.documentElement.classList.toggle('dark', isDark)
+  document.documentElement.classList.toggle('light', !isDark)
+  injectCss('control-custom-css', config.controlCss ?? '')
+}
 
 export function App() {
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -66,6 +76,27 @@ export function App() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [nextSlide, prevSlide, setMode, gotoSection, settingsOpen])
+
+  useEffect(() => {
+    window.electronAPI.getConfig!().then(applyThemeAndCss)
+
+    const unsubConfig = window.electronAPI.onConfigChanged!((config) => {
+      applyThemeAndCss(config)
+    })
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleMediaChange = () => {
+      window.electronAPI.getConfig!().then((config) => {
+        if (config.theme === 'system') applyThemeAndCss(config)
+      })
+    }
+    mediaQuery.addEventListener('change', handleMediaChange)
+
+    return () => {
+      unsubConfig()
+      mediaQuery.removeEventListener('change', handleMediaChange)
+    }
+  }, [])
 
   const hasActive = activeSong !== null
 

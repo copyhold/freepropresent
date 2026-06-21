@@ -101,6 +101,7 @@ export class PresentationStore {
           return {
             slide: section.slides[i],
             sectionName: section.name,
+            sectionType: section.type,
             slideIndexInSection: i
           }
         }

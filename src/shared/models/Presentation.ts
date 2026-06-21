@@ -1,4 +1,4 @@
-import type { CompiledSlide } from './Song'
+import type { CompiledSlide, SectionType } from './Song'
 import type { Template } from './Template'
 import type { AppConfig } from './AppConfig'
 
@@ -17,6 +17,7 @@ export interface PresentationState {
 export interface ResolvedSlide {
   slide: CompiledSlide
   sectionName: string
+  sectionType: SectionType
   slideIndexInSection: number
 }
 

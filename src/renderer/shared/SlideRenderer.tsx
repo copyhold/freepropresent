@@ -14,7 +14,7 @@ export function SlideRenderer({ payload }: Props) {
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-black">
+    <div className={`slide-root slide-${slide.sectionType} relative w-full h-full overflow-hidden bg-black`}>
       <Background background={template.background} />
       {template.parts.map((part) => {
         let lines: string[] = []

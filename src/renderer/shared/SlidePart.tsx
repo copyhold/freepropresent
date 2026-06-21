@@ -80,9 +80,12 @@ export function SlidePart({ part, lines, minFontSize, maxFontSize }: Props) {
   }
 
   const markdown = lines.join('  \n')
+  const partClass = ['slide-part', `slide-part-${part.role}`, languageCode ? `lang-${languageCode}` : '']
+    .filter(Boolean)
+    .join(' ')
 
   return (
-    <div ref={containerRef} style={containerStyle}>
+    <div ref={containerRef} style={containerStyle} className={partClass}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{

@@ -12,6 +12,10 @@ files:
 extraResources:
   - from: data/
     to: default-data/
+  - from: LICENSE
+    to: LICENSE
+  - from: README.md
+    to: README.md
 
 win:
   target:
@@ -24,3 +28,4 @@ nsis:
   perMachine: false
   installerIcon: build/icon.ico
   uninstallerIcon: build/icon.ico
+  license: LICENSE

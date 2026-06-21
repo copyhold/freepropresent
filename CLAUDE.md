@@ -14,7 +14,7 @@ npm run typecheck    # Type-check all tsconfig files
 
 ## Architecture
 
-Propresent is a lyrics presentation **Electron** desktop app. It has two windows:
+[Free]Propresent is a lyrics presentation **Electron** desktop app. It has two windows:
 - **Control window** — song management and slide navigation (operator-facing)
 - **Output window** — clean display rendered on a secondary/projector screen
 

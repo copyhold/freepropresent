@@ -112,21 +112,21 @@ export function App() {
 
   return (
     <>
-      <div className="grid grid-cols-[18%_33%_1fr] grid-rows-[1fr] h-screen bg-app-950 text-app-100 font-sans">
+      <div className="ctrl-root grid grid-cols-[18%_33%_1fr] grid-rows-[1fr] h-screen bg-app-950 text-app-100 font-sans">
         {/* Column 1: Song list */}
-        <div className="border-r border-app-700 overflow-hidden">
+        <div className="ctrl-col-songs border-r border-app-700 overflow-hidden">
           <SongList />
         </div>
 
         {/* Column 2: Song detail */}
-        <div className="border-r border-app-700 overflow-hidden">
+        <div className="ctrl-col-detail border-r border-app-700 overflow-hidden">
           <SongDetailPane />
         </div>
 
         {/* Column 3: Presentation pane */}
-        <div className="flex flex-col overflow-hidden">
+        <div className="ctrl-col-pane flex flex-col overflow-hidden">
           {/* Fade / End controls */}
-          <div className="border-b border-app-700 p-2 flex gap-1.5 shrink-0">
+          <div className="ctrl-pane-toolbar border-b border-app-700 p-2 flex gap-1.5 shrink-0">
             <button
               onClick={() => setMode("blank")}
               disabled={!hasActive}
@@ -159,17 +159,17 @@ export function App() {
           </div>
 
           {/* Template selector */}
-          <div className="border-b border-app-700 shrink-0">
+          <div className="ctrl-pane-templates border-b border-app-700 shrink-0">
             <TemplateSelector />
           </div>
 
           {/* Slide navigator */}
-          <div className="flex-1 overflow-hidden">
+          <div className="ctrl-pane-slides flex-1 overflow-hidden">
             <SlideNavigator />
           </div>
 
           {/* Bottom: preview + info */}
-          <div className="border-t border-app-700 p-2 grid grid-cols-[auto_1fr] gap-3 h-[30%] shrink-0 overflow-hidden">
+          <div className="ctrl-pane-preview border-t border-app-700 p-2 grid grid-cols-[auto_1fr] gap-3 h-[30%] shrink-0 overflow-hidden">
             <OutputPreview />
             <div className="grid grid-rows-[auto_auto] content-start gap-1.5 pt-1">
               <div className="text-[11px] text-app-400">

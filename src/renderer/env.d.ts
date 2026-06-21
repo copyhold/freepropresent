@@ -1,10 +1,16 @@
 import type { PresentationState, OutputRenderPayload, LibraryChangedEvent } from '../shared/models/Presentation'
+import type { AppConfig } from '../shared/models/AppConfig'
 
 declare global {
   interface Window {
     electronAPI: {
       invoke?: (channel: string, ...args: unknown[]) => Promise<unknown>
       openFile?: (filePath: string) => Promise<string>
+      getConfig?: () => Promise<AppConfig>
+      saveConfig?: (config: Partial<AppConfig>) => Promise<void>
+      openDataFolder?: () => Promise<void>
+      getAppPaths?: () => Promise<{ dataDir: string }>
+      onSettingsOpen?: (cb: () => void) => () => void
       onPresentationStateChanged?: (cb: (state: PresentationState) => void) => () => void
       onLibraryChanged?: (cb: (event: LibraryChangedEvent) => void) => () => void
       onOutputRender?: (cb: (payload: OutputRenderPayload) => void) => () => void

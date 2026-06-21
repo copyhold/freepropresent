@@ -1,13 +1,15 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAppStore } from './store'
 import { SongList } from './components/SongList'
 import { SongDetailPane } from './components/SongDetailPane'
 import { SlideNavigator } from './components/SlideNavigator'
 import { TemplateSelector } from './components/TemplateSelector'
 import { OutputPreview } from './components/OutputPreview'
+import { SettingsModal } from './components/SettingsModal'
 import type { PresentationState, LibraryChangedEvent } from '../../shared/models/Presentation'
 
 export function App() {
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const loadLibrary = useAppStore((s) => s.loadLibrary)
   const setPresentationState = useAppStore((s) => s.setPresentationState)
   const nextSlide = useAppStore((s) => s.nextSlide)
@@ -29,14 +31,18 @@ export function App() {
       loadLibrary()
     })
 
+    const unsubSettings = window.electronAPI.onSettingsOpen!(() => setSettingsOpen(true))
+
     return () => {
       unsubState()
       unsubLibrary()
+      unsubSettings()
     }
   }, [])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      if (settingsOpen) return
       if ((e.target as HTMLElement).tagName === 'INPUT') return
 
       switch (e.key) {
@@ -59,11 +65,12 @@ export function App() {
 
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [nextSlide, prevSlide, setMode, gotoSection])
+  }, [nextSlide, prevSlide, setMode, gotoSection, settingsOpen])
 
   const hasActive = activeSong !== null
 
   return (
+    <>
     <div className="grid grid-cols-[18%_33%_1fr] grid-rows-[1fr] h-screen bg-app-950 text-white font-sans">
       {/* Column 1: Song list */}
       <div className="border-r border-app-700 overflow-hidden">
@@ -134,5 +141,8 @@ export function App() {
         </div>
       </div>
     </div>
+
+    {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
+    </>
   )
 }

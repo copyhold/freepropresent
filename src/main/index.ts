@@ -1,7 +1,7 @@
-import { app } from "electron";
+import { app, Menu } from "electron";
 import { join } from "path";
 import { mkdirSync, readdirSync, cpSync, existsSync } from "fs";
-import { createWindows } from "./windows";
+import { createWindows, getControlWindow } from "./windows";
 
 const isDev = process.env.NODE_ENV === "development";
 import { SongLibrary } from "./store/SongLibrary";
@@ -9,6 +9,7 @@ import { TemplateLibrary } from "./store/TemplateLibrary";
 import { AppConfigLibrary } from "./store/AppConfigLibrary";
 import { PresentationStore } from "./store/PresentationStore";
 import { registerAllHandlers } from "./ipc/index";
+import { IPC } from "../shared/ipc/channels";
 
 const songLibrary = new SongLibrary();
 const templateLibrary = new TemplateLibrary();
@@ -62,7 +63,19 @@ app.whenReady().then(async () => {
     appConfigLibrary,
   );
 
-  registerAllHandlers(songLibrary, templateLibrary, presentationStore);
+  registerAllHandlers(songLibrary, templateLibrary, presentationStore, appConfigLibrary, dataDir);
+
+  const openSettings = () => getControlWindow()?.webContents.send(IPC.SETTINGS_OPEN)
+  const menuTemplate: Electron.MenuItemConstructorOptions[] = process.platform === 'darwin'
+    ? [{ label: app.name, submenu: [
+        { label: 'Preferences…', accelerator: 'CmdOrCtrl+,', click: openSettings },
+        { type: 'separator' },
+        { role: 'quit' }
+      ]}]
+    : [{ label: 'Edit', submenu: [
+        { label: 'Preferences…', accelerator: 'CmdOrCtrl+,', click: openSettings }
+      ]}]
+  Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate))
 
   createWindows();
 });

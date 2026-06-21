@@ -1,11 +1,23 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { PresentationState, OutputRenderPayload, LibraryChangedEvent } from '../shared/models/Presentation'
+import type { AppConfig } from '../shared/models/AppConfig'
 import { IPC } from '../shared/ipc/channels'
 
 contextBridge.exposeInMainWorld('electronAPI', {
   invoke: (channel: string, ...args: unknown[]) => ipcRenderer.invoke(channel, ...args),
 
   openFile: (filePath: string) => ipcRenderer.invoke(IPC.SHELL_OPEN_FILE, filePath),
+
+  getConfig: (): Promise<AppConfig> => ipcRenderer.invoke(IPC.CONFIG_GET),
+  saveConfig: (config: Partial<AppConfig>): Promise<void> => ipcRenderer.invoke(IPC.CONFIG_SAVE, config),
+  openDataFolder: (): Promise<void> => ipcRenderer.invoke(IPC.SHELL_OPEN_FOLDER),
+  getAppPaths: (): Promise<{ dataDir: string }> => ipcRenderer.invoke(IPC.APP_GET_PATHS),
+
+  onSettingsOpen: (cb: () => void) => {
+    const handler = () => cb()
+    ipcRenderer.on(IPC.SETTINGS_OPEN, handler)
+    return () => ipcRenderer.off(IPC.SETTINGS_OPEN, handler)
+  },
 
   onRender: (cb: (payload: OutputRenderPayload) => void) => {
     const handler = (_e: Electron.IpcRendererEvent, payload: OutputRenderPayload) => cb(payload)

@@ -18,7 +18,7 @@ A settings modal overlaid on the control window, triggered via a native Electron
 Add three optional fields:
 
 ```ts
-theme?: 'dark' | 'light' | 'system'
+theme: 'dark' | 'light' | 'system' - default 'system'
 controlCss?: string
 presentationCss?: string
 ```

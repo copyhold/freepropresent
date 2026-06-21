@@ -22,6 +22,11 @@ export const IPC = {
   PRESENT_STATE_CHANGED: 'present:stateChanged',
   LIBRARY_CHANGED: 'library:changed',
   OUTPUT_RENDER: 'output:render',
+
+  CONFIG_GET: 'config:get',
+  CONFIG_SAVE: 'config:save',
+  SHELL_OPEN_FOLDER: 'shell:openFolder',
+  SETTINGS_OPEN: 'settings:open',
 } as const
 
 export type IpcChannel = (typeof IPC)[keyof typeof IPC]

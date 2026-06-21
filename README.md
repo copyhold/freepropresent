@@ -1,4 +1,4 @@
-# Propresent
+# [Free]propresent
 
 A minimalist lyrics presentation app for worship teams that need to display songs on a projector — including simultaneously in more than one language.
 
@@ -12,7 +12,7 @@ Worship software is usually bloated. Teams end up maintaining a sprawling databa
 
 ## The solution
 
-Propresent manages songs as plain Markdown files. There is no database, no import/export, no sync service. A song is a `.md` file with a small YAML header and sections delimited by `[Verse 1]`, `[Chorus]`, `[Bridge]`, and so on. You edit songs in any text editor. You version-control them with git. You can search them with `grep`. The app watches the folder and picks up changes automatically.
+[Free]propresent manages songs as plain Markdown files. There is no database, no import/export, no sync service. A song is a `.md` file with a small YAML header and sections delimited by `[Verse 1]`, `[Chorus]`, `[Bridge]`, and so on. You edit songs in any text editor. You version-control them with git. You can search them with `grep`. The app watches the folder and picks up changes automatically.
 
 ### Multilingual by design
 
@@ -50,7 +50,7 @@ A template is a JSON file that describes the slide background and a set of posit
 
 ## How it works
 
-Propresent is an Electron desktop app with two windows:
+[Free]Propresent is an Electron desktop app with two windows:
 
 - **Control window** — song library, slide navigator, template selector, and a live preview of what the projector shows. This is what the operator sees.
 - **Output window** — the clean display intended for a secondary screen or projector. It shows nothing but the current slide.
@@ -97,7 +97,7 @@ Bridge text here
 
 ## Getting started
 
-Download the windows release from [releases](https://github.com/copyhold/propresent/releases) page, or run it from the source code.
+Download the windows release from [releases](https://github.com/copyhold/freepropresent/releases) page, or run it from the source code.
 
 ```bash
 npm install

@@ -6,10 +6,12 @@ on:
       - main
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  create-release:
+    runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      tag: ${{ steps.tag.outputs.value }}
 
     steps:
       - name: Checkout
@@ -17,7 +19,6 @@ jobs:
 
       - name: Compute tag
         id: tag
-        shell: bash
         run: |
           BASE=$(node -p "const v=require('./package.json').version.split('.');v[2]=${{ github.run_number }};'v'+v.join('.')")
           echo "value=$BASE" >> $GITHUB_OUTPUT
@@ -26,6 +27,19 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release create ${{ steps.tag.outputs.value }} --title "${{ steps.tag.outputs.value }}" --notes "Commit ${{ github.sha }}" --prerelease
+
+  build-windows:
+    needs: create-release
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        arch: [x64, arm64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -38,14 +52,14 @@ jobs:
       - name: Bump version
         shell: bash
         run: |
-          VERSION="${{ steps.tag.outputs.value }}"
+          VERSION="${{ needs.create-release.outputs.tag }}"
           npm version "${VERSION#v}" --no-git-tag-version
 
       - name: Build
         run: npm run build
 
       - name: Package Windows installer
-        run: npx electron-builder --win --publish never
+        run: npx electron-builder --win --arch ${{ matrix.arch }} --publish never
 
       - name: Upload EXE to release
         shell: pwsh
@@ -55,4 +69,4 @@ jobs:
           $exe = Get-ChildItem -Path dist -Filter "*.exe" -Recurse | Select-Object -First 1
           if (-not $exe) { throw "No .exe found in dist/" }
           Write-Host "Uploading $($exe.FullName)"
-          gh release upload ${{ steps.tag.outputs.value }} $exe.FullName --clobber
+          gh release upload ${{ needs.create-release.outputs.tag }} $exe.FullName --clobber

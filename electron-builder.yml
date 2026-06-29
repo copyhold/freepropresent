@@ -20,8 +20,6 @@ extraResources:
 win:
   target:
     - target: nsis
-      arch:
-        - x64
 
 nsis:
   oneClick: true
@@ -29,3 +27,4 @@ nsis:
   installerIcon: build/icon.ico
   uninstallerIcon: build/icon.ico
   license: LICENSE
+  artifactName: ${productName}-Setup-${version}-${arch}.exe

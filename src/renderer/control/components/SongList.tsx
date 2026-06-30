@@ -8,9 +8,10 @@ export function SongList() {
   const presentationState = useAppStore((s) => s.presentationState);
   const [search, setSearch] = useState("");
 
-  const filtered = songs.filter((s) =>
+  const visible = songs.filter((s) => !s.isVariant)
+  const filtered = visible.filter((s) =>
     s.title.toLowerCase().includes(search.toLowerCase()),
-  );
+  )
 
   return (
     <div className="flex flex-col h-full">

@@ -1,132 +1,175 @@
-import { watch, type FSWatcher } from "chokidar";
-import { BrowserWindow } from "electron";
-import { basename, extname, relative } from "path";
-import type { CompiledSong } from "../../shared/models/Song";
-import type { LibraryChangedEvent } from "../../shared/models/Presentation";
-import { IPC } from "../../shared/ipc/channels";
-import { compileSong } from "../parser/songCompiler";
+import { watch, type FSWatcher } from 'chokidar'
+import { BrowserWindow } from 'electron'
+import { extname, dirname, resolve } from 'path'
+import { readFileSync, statSync, existsSync } from 'fs'
+import type { CompiledSong, SongEntry, ReferenceEntry, ReferenceRole } from '../../shared/models/Song'
+import type { LibraryChangedEvent } from '../../shared/models/Presentation'
+import { IPC } from '../../shared/ipc/channels'
+import { compileSong } from '../parser/songCompiler'
+import { parseSongContent } from '../parser/songParser'
 
 export class SongLibrary {
-  private songs = new Map<string, CompiledSong>();
-  private variantIndex = new Map<string, string>(); // variantAbsPath → songId
-  private watchers: FSWatcher[] = [];
-  private songDirs: string[] = [];
+  private songs = new Map<string, SongEntry>()
+  private references = new Map<string, ReferenceEntry>()
+  private watchers: FSWatcher[] = []
+  private songDirs: string[] = []
+  private initialScanComplete = false
 
   async load(songDirs: string[]): Promise<void> {
-    this.songDirs = songDirs;
-    for (const w of this.watchers) w.close();
-    this.watchers = [];
+    this.songDirs = songDirs
+    this.songs.clear()
+    this.references.clear()
+    this.initialScanComplete = false
 
-    const readyPromises: Promise<void>[] = [];
+    for (const w of this.watchers) w.close()
+    this.watchers = []
+
+    const readyPromises: Promise<void>[] = []
 
     for (const dir of songDirs) {
       const watcher = watch(dir, {
         persistent: true,
         ignoreInitial: false,
         awaitWriteFinish: { stabilityThreshold: 300, pollInterval: 100 },
-      });
-      watcher.on("add", (path) => this.handleFile(dir, path, "added"));
-      watcher.on("change", (path) => this.handleFile(dir, path, "changed"));
-      watcher.on("unlink", (path) => this.handleRemove(dir, path));
-      this.watchers.push(watcher);
+      })
+      watcher.on('add', (path) => this.handleFile(path, 'added'))
+      watcher.on('change', (path) => this.handleFile(path, 'changed'))
+      watcher.on('unlink', (path) => this.handleRemove(path))
+      this.watchers.push(watcher)
       readyPromises.push(
-        new Promise<void>((resolve) => watcher.on("ready", resolve)),
-      );
+        new Promise<void>((resolve) => watcher.on('ready', resolve)),
+      )
     }
 
-    await Promise.all(readyPromises);
+    await Promise.all(readyPromises)
+    this.initialScanComplete = true
+    this.rebuildReferences()
   }
 
-  private handleFile(
-    dir: string,
-    filePath: string,
-    action: "added" | "changed",
-  ): void {
-    if (extname(filePath) !== ".md") return;
-
-    console.debug("dir, path, action", dir, filePath, action);
-    if (this.variantIndex.has(filePath)) {
-      const songId = this.variantIndex.get(filePath)!;
-      const song = this.songs.get(songId);
-      if (song) this.loadSong(dir, song.filePath);
-      return;
-    }
-
-    const stem = basename(filePath, ".md");
-    if (stem.includes(".")) return;
-
-    this.loadSong(dir, filePath, action);
+  private handleFile(filePath: string, action: 'added' | 'changed'): void {
+    if (extname(filePath) !== '.md') return
+    this.loadEntry(filePath, action)
   }
 
-  private loadSong(
-    dir: string,
-    filePath: string,
-    action: "added" | "changed" = "changed",
-  ): void {
+  private loadEntry(filePath: string, action: 'added' | 'changed' = 'changed'): void {
+    // Skip files already loaded during the initial scan (e.g. variants pre-loaded by their parent)
+    if (action === 'added' && this.songs.has(filePath)) return
+
     try {
-      const id = this.filePathToId(dir, filePath);
-      const song = compileSong(filePath, id);
-      this.songs.set(id, song);
+      const raw = readFileSync(filePath, 'utf-8')
+      const stat = statSync(filePath)
+      const parsed = parseSongContent(raw)
 
-      for (const varPath of song.variantFilePaths) {
-        this.variantIndex.set(varPath, id);
+      const hasVariantsField = /^Variants\s*:/im.test(raw)
+      const isVariant = !hasVariantsField
+
+      const entry: SongEntry = {
+        id: filePath,
+        filePath,
+        title: parsed.title,
+        mood: parsed.mood,
+        updatedAt: stat.mtime.toISOString(),
+        lyrics: raw,
+        isVariant,
       }
 
-      this.notify({ type: "song", id, action });
+      this.songs.set(filePath, entry)
+
+      if (!isVariant) {
+        const dir = dirname(filePath)
+        for (const variant of parsed.variants) {
+          const variantPath = resolve(dir, variant.relativePath)
+          if (existsSync(variantPath)) {
+            this.loadEntry(variantPath, 'added')
+          }
+        }
+      }
+
+      if (this.initialScanComplete) {
+        this.rebuildReferences()
+        this.notify({ type: 'song', id: filePath, action })
+      }
     } catch (err) {
-      console.error("Failed to load song:", filePath, err);
+      console.error('Failed to load entry:', filePath, err)
     }
   }
 
-  private handleRemove(dir: string, filePath: string): void {
-    if (extname(filePath) !== ".md") return;
+  private handleRemove(filePath: string): void {
+    if (extname(filePath) !== '.md') return
+    if (!this.songs.has(filePath)) return
 
-    const id = this.filePathToId(dir, filePath);
-    if (this.songs.has(id)) {
-      const song = this.songs.get(id)!;
-      for (const varPath of song.variantFilePaths) {
-        this.variantIndex.delete(varPath);
+    this.songs.delete(filePath)
+    this.references.delete(filePath)
+
+    if (this.initialScanComplete) {
+      this.rebuildReferences()
+      this.notify({ type: 'song', id: filePath, action: 'removed' })
+    }
+  }
+
+  private rebuildReferences(): void {
+    this.references.clear()
+
+    // Mark all main songs as 'main' referencing themselves
+    for (const [path, entry] of this.songs) {
+      if (!entry.isVariant) {
+        this.references.set(path, { key: path, role: 'main' })
       }
-      this.songs.delete(id);
-      this.notify({ type: "song", id, action: "removed" });
     }
-  }
 
-  // Namespace by folder index to avoid collisions across directories.
-  // Songs in the first (default) dir keep bare stems for backwards compatibility.
-  private filePathToId(dir: string, filePath: string): string {
-    const stem = basename(filePath, ".md");
-    const dirIndex = this.songDirs.indexOf(dir);
-    if (dirIndex <= 0) return stem;
-    // Use relative path from dir root as the id for extra folders
-    const rel = relative(dir, filePath)
-      .replace(/\.md$/, "")
-      .replace(/\\/g, "/");
-    return `${dirIndex}:${rel}`;
+    // Add variant entries derived from each main song's declared variants
+    for (const [path, entry] of this.songs) {
+      if (entry.isVariant) continue
+      const parsed = parseSongContent(entry.lyrics)
+      const dir = dirname(path)
+
+      for (const variant of parsed.variants) {
+        const variantPath = resolve(dir, variant.relativePath)
+        const langCode = variant.langCode
+        const role: ReferenceRole = langCode.startsWith('translit-')
+          ? `translit_${langCode.slice('translit-'.length)}`
+          : `translation_${langCode}`
+        this.references.set(variantPath, { key: path, role })
+      }
+    }
+
+    // Fallback: any file not yet in references gets treated as a standalone main
+    for (const [path] of this.songs) {
+      if (!this.references.has(path)) {
+        this.references.set(path, { key: path, role: 'main' })
+      }
+    }
   }
 
   private notify(event: LibraryChangedEvent): void {
     for (const win of BrowserWindow.getAllWindows()) {
-      win.webContents.send(IPC.LIBRARY_CHANGED, event);
+      win.webContents.send(IPC.LIBRARY_CHANGED, event)
     }
   }
 
-  getAll(): CompiledSong[] {
-    return Array.from(this.songs.values());
+  compile(id: string): CompiledSong | null {
+    const entry = this.songs.get(id)
+    if (!entry) return null
+    return compileSong(entry.filePath, id)
   }
 
-  get(id: string): CompiledSong | undefined {
-    return this.songs.get(id);
+  getAll(): SongEntry[] {
+    return Array.from(this.songs.values())
+  }
+
+  get(id: string): SongEntry | undefined {
+    return this.songs.get(id)
   }
 
   reload(): void {
-    this.songs.clear();
-    this.variantIndex.clear();
-    if (this.songDirs.length) this.load(this.songDirs);
+    this.songs.clear()
+    this.references.clear()
+    this.initialScanComplete = false
+    if (this.songDirs.length) this.load(this.songDirs)
   }
 
   close(): void {
-    for (const w of this.watchers) w.close();
-    this.watchers = [];
+    for (const w of this.watchers) w.close()
+    this.watchers = []
   }
 }

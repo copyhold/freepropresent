@@ -8,10 +8,23 @@ export function SongList() {
   const presentationState = useAppStore((s) => s.presentationState);
   const [search, setSearch] = useState("");
 
-  const visible = songs.filter((s) => !s.isVariant)
-  const filtered = visible.filter((s) =>
-    s.title.toLowerCase().includes(search.toLowerCase()),
-  )
+  const mainSongs = songs.filter((s) => !s.isVariant);
+
+  const query = search.toLowerCase().trim();
+  const filteredSongs = query
+    ? (() => {
+        const matchedMainIds = new Set(
+          songs
+            .filter(
+              (s) =>
+                s.title.toLowerCase().includes(query) ||
+                s.lyrics.toLowerCase().includes(query),
+            )
+            .map((s) => s.mainSongId ?? s.filePath),
+        );
+        return mainSongs.filter((s) => matchedMainIds.has(s.filePath));
+      })()
+    : mainSongs;
 
   return (
     <div className="flex flex-col h-full">
@@ -23,34 +36,31 @@ export function SongList() {
         className="p-2 m-2 rounded border border-app-600 bg-app-900 text-app-100"
       />
       <div className="flex-1 overflow-y-auto">
-        {filtered.map((song) => {
-          const isActive = presentationState?.activeSongId === song.id;
-          const isSelected = selectedSong?.id === song.id;
+        {filteredSongs.map((song) => {
+            const isActive = presentationState?.activeSongId === song.id;
+            const isSelected = selectedSong?.id === song.id;
 
-          return (
-            <div
-              key={song.id}
-              onClick={() => selectSong(song.id)}
-              className={`py-2.5 px-3 cursor-pointer border-b border-app-700 text-app-100 ${
-                isActive
-                  ? "bg-accent-song"
-                  : isSelected
-                    ? "bg-app-800"
-                    : "bg-transparent"
-              }`}
-            >
-              <div className="font-medium">{song.title}</div>
-              {song.mood.length > 0 && (
-                <div className="text-[11px] text-app-300 mt-0.5">
-                  {song.mood.join(", ")}
-                </div>
-              )}
-            </div>
-          );
-        })}
-        {filtered.length === 0 && (
-          <div className="p-3 text-app-400 text-center">No songs found</div>
-        )}
+            return (
+              <div
+                key={song.id}
+                onClick={() => selectSong(song.id)}
+                className={`py-2.5 px-3 cursor-pointer border-b border-app-700 text-app-100 ${
+                  isActive
+                    ? "bg-accent-song"
+                    : isSelected
+                      ? "bg-app-800"
+                      : "bg-transparent"
+                }`}
+              >
+                <div className="font-medium">{song.title}</div>
+                {song.mood.length > 0 && (
+                  <div className="text-[11px] text-app-300 mt-0.5">
+                    {song.mood.join(", ")}
+                  </div>
+                )}
+              </div>
+            );
+          })}
       </div>
     </div>
   );

@@ -20,6 +20,7 @@ export interface SongEntry {
   updatedAt: string  // ISO 8601 string from file mtime
   lyrics: string     // raw file content (utf-8)
   isVariant: boolean // true when no 'Variants:' field present in header
+  mainSongId?: string // filePath of the parent main song (set only for variants)
 }
 
 export type ReferenceRole = 'main' | `translation_${string}` | `translit_${string}`

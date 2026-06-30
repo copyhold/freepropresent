@@ -264,7 +264,27 @@ export class SongLibrary {
 }
 ```
 
-- [ ] **Step 2: Type-check**
+- [ ] **Step 2: Verify references are built correctly**
+
+Add a temporary `console.log` call at the end of `rebuildReferences()` to confirm the map populates as expected during development:
+
+```ts
+// in rebuildReferences(), after the third pass — remove before committing
+console.debug('[SongLibrary] references rebuilt:', this.references.size, 'entries')
+for (const [path, ref] of this.references) {
+  console.debug(' ', path.split('/').at(-1), '→', ref.role)
+}
+```
+
+Run `npm run dev`, open the console in the control window DevTools, and confirm:
+- Each main song appears with `role: 'main'`
+- Each variant file appears with `role: 'translation_<lang>'` or `role: 'translit_<lang>'`
+- `references.size === songs.size` (one entry per file)
+- Standalone songs (with empty `Variants:`) appear as `role: 'main'`
+
+Remove the `console.debug` calls before the next step.
+
+- [ ] **Step 3: Type-check**
 
 ```bash
 npm run typecheck
@@ -272,11 +292,11 @@ npm run typecheck
 
 Expected: errors only in files that still reference the old `SongLibrary` API (`PresentationStore`, `ipc/songs.ts`). These are fixed in subsequent tasks. If you see errors in `SongLibrary.ts` itself, fix them before continuing.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add src/main/store/SongLibrary.ts
-git commit -m "feat: refactor SongLibrary to store SongEntry, lazy compile"
+git commit -m "feat: refactor SongLibrary to store SongEntry, lazy compile, build References"
 ```
 
 ---

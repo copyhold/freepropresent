@@ -41,7 +41,22 @@ The hour I first believed
 | `Mood` | No | Comma-separated mood tags |
 | `Template` | No | Comma-separated recommended template names; shown as quick-select buttons in the control UI |
 | `Language` | No | BCP-47 language code of the primary content (e.g. `en`, `he`). Defaults to `primary` if absent. |
-| `Variants` | No | List of `langCode: relative/path.md` pairs |
+| `Variants` | **Required** | List of `langCode: relative/path.md` pairs; use an empty value when there are no variants |
+
+> **Note:** The `Variants:` field must be present in every main/standalone song file, even when no translations exist. Its presence is how the app distinguishes main songs from translation files. Variant files must never include a `Variants:` field.
+
+**Standalone song (no translations):**
+
+```
+Title: Song with no variants
+Variants:
+
+---
+
+[Verse 1]
+Line one
+Line two
+```
 
 ### Header Separator
 

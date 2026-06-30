@@ -12,6 +12,25 @@ export interface CompiledSection {
   slides: CompiledSlide[]
 }
 
+export interface SongEntry {
+  id: string         // absolute file path
+  filePath: string   // same as id
+  title: string
+  mood: string[]
+  updatedAt: string  // ISO 8601 string from file mtime
+  lyrics: string     // raw file content (utf-8)
+  isVariant: boolean // true when no 'Variants:' field present in header
+}
+
+export type ReferenceRole = 'main' | `translation_${string}` | `translit_${string}`
+
+export interface ReferenceEntry {
+  key: string      // absolute path of the main/parent song
+  role: ReferenceRole
+}
+
+export type References = Map<string, ReferenceEntry>
+
 export interface CompiledSong {
   id: string
   filePath: string

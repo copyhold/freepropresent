@@ -1,9 +1,11 @@
 import { BrowserWindow } from 'electron'
 import type { PresentationState, OutputRenderPayload, ResolvedSlide } from '../../shared/models/Presentation'
+import type { CompiledSong } from '../../shared/models/Song'
 import { IPC } from '../../shared/ipc/channels'
 import type { SongLibrary } from './SongLibrary'
 import type { TemplateLibrary } from './TemplateLibrary'
 import type { AppConfigLibrary } from './AppConfigLibrary'
+import { compileSong } from '../parser/songCompiler'
 
 const DEFAULT_TEMPLATE_ID = 'default'
 
@@ -20,6 +22,7 @@ function makeInitialState(): PresentationState {
 
 export class PresentationStore {
   private state: PresentationState = makeInitialState()
+  private compiledSong: CompiledSong | null = null
 
   constructor(
     private songs: SongLibrary,
@@ -32,8 +35,11 @@ export class PresentationStore {
   }
 
   loadSong(songId: string, templateId?: string): PresentationState {
-    const song = this.songs.get(songId)
-    if (!song) return this.state
+    const entry = this.songs.get(songId)
+    if (!entry || entry.isVariant) return this.state
+
+    const song = compileSong(entry.filePath, songId)
+    this.compiledSong = song
 
     const totalSlides = song.sections.reduce((sum, s) => sum + s.slides.length, 0)
 
@@ -82,20 +88,19 @@ export class PresentationStore {
   }
 
   clear(): PresentationState {
+    this.compiledSong = null
     this.state = makeInitialState()
     this.broadcast()
     return this.getState()
   }
 
   private resolveCurrentSlide(): ResolvedSlide | null {
-    const { activeSongId, currentSlideIndex } = this.state
-    if (!activeSongId) return null
+    if (!this.state.activeSongId || !this.compiledSong) return null
 
-    const song = this.songs.get(activeSongId)
-    if (!song) return null
-
+    const { currentSlideIndex } = this.state
     let flat = 0
-    for (const section of song.sections) {
+
+    for (const section of this.compiledSong.sections) {
       for (let i = 0; i < section.slides.length; i++) {
         if (flat === currentSlideIndex) {
           return {
@@ -113,21 +118,18 @@ export class PresentationStore {
   }
 
   broadcast(): void {
-    const { activeSongId, templateId } = this.state
-    const template =
-      this.templates.get(templateId) ?? this.templates.getDefault()
-
+    const { templateId } = this.state
+    const template = this.templates.get(templateId) ?? this.templates.getDefault()
     if (!template) return
 
-    const song = activeSongId ? this.songs.get(activeSongId) : null
     const resolvedSlide = this.resolveCurrentSlide()
 
     const payload: OutputRenderPayload = {
       state: this.getState(),
       slide: resolvedSlide,
       template,
-      songTitle: song?.title ?? '',
-      songCopyright: song?.copyright,
+      songTitle: this.compiledSong?.title ?? '',
+      songCopyright: this.compiledSong?.copyright,
       appConfig: this.appConfigLib.get()
     }
 
